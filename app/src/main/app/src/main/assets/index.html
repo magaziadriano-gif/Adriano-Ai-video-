@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="sw"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adrian AI Video</title>
+<style>
+body{margin:0;background:#050817;color:#fff;font-family:Arial,sans-serif}.wrap{max-width:430px;margin:auto;min-height:100vh;background:linear-gradient(#09132d,#0a0d20)}
+header{text-align:center;padding:22px 15px;border-bottom:1px solid #26355f}.pic{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid #735cff}.logo{font-size:28px;font-weight:800;margin:8px}.blue{color:#55bfff}.muted{color:#aab5d8;font-size:13px}.box{margin:15px;padding:16px;border-radius:18px;background:#111b38;border:1px solid #2d3c6c}.title{font-weight:800;font-size:17px;margin-bottom:10px}textarea,select{width:100%;box-sizing:border-box;background:#080f24;color:#fff;border:1px solid #334475;border-radius:12px;padding:12px;margin:5px 0 10px}textarea{height:145px;resize:none}button{width:100%;padding:14px;border:0;border-radius:12px;color:#fff;font-weight:800;background:linear-gradient(90deg,#5c49ff,#b248ff);margin-top:6px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.item{background:#0a1230;border:1px solid #283965;padding:12px;border-radius:13px;font-size:13px}.item b{display:block;margin-bottom:4px}.scene{padding:12px;border-radius:12px;background:#0a1230;border:1px solid #293864;margin:8px 0}.tag{color:#9e91ff;font-weight:bold}.hidden{display:none}.login{position:fixed;inset:0;background:#050817;display:flex;align-items:center;justify-content:center}.login .box{width:calc(100% - 50px);max-width:350px;text-align:center}.login input{width:100%;box-sizing:border-box;background:#080f24;color:#fff;border:1px solid #334475;border-radius:12px;padding:13px}.err{height:18px;color:#ff7d8d;font-size:12px;margin-top:8px}
+
+<style>
+.mini{width:auto;padding:8px 11px;margin-top:8px;font-size:12px;background:#26355f}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.actions button{margin-top:0}.plans{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.plan{background:#0a1230;border:1px solid #283965;padding:10px;border-radius:12px;text-align:center;font-size:12px}.plan button{padding:9px;font-size:11px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}.badge{padding:6px 9px;border-radius:20px;background:#172553;font-size:11px}
+</style>
+</style></head><body>
+<div class="login" id="login"><div class="box"><img class="pic" id="p1"><div class="logo">Adrian <span class="blue">AI Video</span></div><div class="muted">OWNER ACCESS</div><br><input id="pw" type="password" placeholder="Owner password"><button onclick="go()">LOGIN</button><div class="err" id="err"></div><small class="muted">Demo: Adrian2026!</small></div></div>
+<div class="wrap"><header><img class="pic" id="p2"><div class="logo">Adrian <span class="blue">AI Video</span></div><div class="muted">Story → Scenes → Voice → Video</div></header>
+<div class="box"><div class="title">🎬 Create your AI video</div><textarea id="story" placeholder="Andika story yako hapa..."></textarea><select id="dur"><option>1 minute</option><option>3 minutes</option><option>5 minutes</option><option selected>8 minutes</option></select><select id="ratio"><option selected>9:16 TikTok / Reels</option><option>16:9 YouTube</option><option>1:1 Square</option></select><button onclick="make()">✨ GENERATE SCENES</button></div>
+<div class="box"><div class="title">🚀 Features</d<script>
+const $=id=>document.getElementById(id);
+const state=JSON.parse(localStorage.getItem('aiv_state')||'null')||{credits:20,plan:'Starter'};
+function save(){localStorage.setItem('aiv_state',JSON.stringify(state));}
+function updateCredits(){let el=$('credits');if(!el){el=document.createElement('div');el.id='credits';el.className='muted';$('out').before(el)}el.textContent=`💎 Credits: ${state.credits} • ${state.plan}`;}
+function go(){if($('pw').value==='Adrian2026!'){$('login').style.display='none';sessionStorage.aiv=1;updateCredits()}else $('err').textContent='Password si sahihi.'}
+if(sessionStorage.aiv==='1') $('login').style.display='none';
+function make(){
+ const s=$('story').value.trim(); if(!s){alert('Andika story kwanza.');return}
+ if(state.credits<2){alert('Credits zimeisha. Chagua upgrade plan ili kuendelea.');return}
+ const sentences=s.replace(/\n+/g,' ').split(/(?<=[.!?])\s+/).filter(Boolean);
+ let a=sentences.length?sentences.slice(0,12):[s];
+ if(a.length<4){const base=a.slice();while(a.length<4)a.push(base[(a.length-1)%base.length])}
+ state.credits-=2;save();updateCredits();
+ $('scenes').innerHTML=a.map((x,i)=>`<div class="scene"><span class="tag">SCENE ${i+1}</span><br><b>${x}</b><br><small class="muted">🎨 3D cinematic • 👤 consistent characters • 📐 ${$('ratio').value} • ⏱️ ${$('dur').value}</small><br><button class="mini" onclick="speakText(${i})">🔊 Play scene</button></div>`).join('');
+ $('out').classList.remove('hidden'); $('out').scrollIntoView({behavior:'smooth'});
+}
+function speakText(i){const node=document.querySelectorAll('.scene')[i];if(!node)return;speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(node.innerText.replace('Play scene','')))}
+function listen(){const text=$('story').value.trim();if(!text)return alert('Andika story kwanza.');speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='sw-TZ';u.rate=.95;speechSynthesis.speak(u)}
+function clearAll(){$('story').value='';$('out').classList.add('hidden');$('scenes').innerHTML=''}
+function downloadStoryboard(){const story=$('story').value.trim();const scenes=[...document.querySelectorAll('.scene')].map((x,i)=>`SCENE ${i+1}\n${x.innerText.replace('🔊 Play scene','')}`).join('\n\n');if(!scenes)return alert('Generate scenes kwanza.');const blob=new Blob([`ADRIAN AI VIDEO\n\nSTORY\n${story}\n\n${scenes}`],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Adrian_AI_Video_Storyboard.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function upgrade(plan,cost){if(state.credits>=cost){state.credits-=cost;state.plan=plan;save();updateCredits();alert(`${plan} plan imewashwa kwa demo.`)}else{state.credits+=cost;state.plan=plan;save();updateCredits();alert(`${plan} demo imewashwa. Credits zimeongezwa.`)}}
+function showPlans(){alert('STARTER: 20 credits\nPRO: 200 credits + advanced tools\nBUSINESS: 1000 credits + commercial workflow\n\nHii ni demo; malipo halisi bado hayajaunganishwa.')}
+updateCredits();
+</script>vWrKRHk/9k=";p1.src=photo;p2.src=photo;
+function go(){if(pw.value==="Adrian2026!"){login.style.display="none"}else err.textContent="Password si sahihi";}
+function make(){let s=story.value.trim();if(!s){alert("Andika story kwanza.");return}let a=s.split(/(?<=[.!?])\s+/).filter(Boolean);if(a.length<6){a=[...a,...a,...a].slice(0,8)}
+scenes.innerHTML=a.slice(0,16).map((x,i)=>`<div class="scene"><span class="tag">SCENE ${i+1}</span><br>${x}<br><small class="muted">3D cinematic visual • consistent characters • ${ratio.value}</small></div>`).join("");out.classList.remove("hidden");}
+function listen(){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(story.value));}
+</script></body></html>
